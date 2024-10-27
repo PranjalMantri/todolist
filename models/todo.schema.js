@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const todoSchema = new mongoose.Schema({
   userId: {
@@ -14,3 +14,5 @@ const todoSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+export const Todo = mongoose.model("Todos", todoSchema);
