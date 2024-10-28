@@ -146,7 +146,7 @@ app.post("/todo", verifyJWT, async (req, res) => {
   });
 });
 
-app.patch("/todo/:id", async (req, res) => {
+app.patch("/todo/:id", verifyJWT, async (req, res) => {
   const todoId = req.params.id;
   const { body } = req.body;
 
@@ -177,7 +177,7 @@ app.patch("/todo/:id", async (req, res) => {
   });
 });
 
-app.delete("/todo/:id", async (req, res) => {
+app.delete("/todo/:id", verifyJWT, async (req, res) => {
   const todoId = req.params.id;
 
   if (!todoId) {
@@ -204,6 +204,39 @@ app.delete("/todo/:id", async (req, res) => {
   });
 });
 
-// app.get("/todos/completed", (req, res) => {});
+app.get("/todos/completed", verifyJWT, async (req, res) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(404).json({
+      success: true,
+      message: "User does not exist",
+    });
+  }
+
+  const pipeline = [
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(userId),
+        isCompleted: true,
+      },
+    },
+  ];
+
+  const todos = await Todo.aggregate(pipeline);
+
+  if (!todos || todos.length == 0) {
+    return res.status(400).json({
+      success: false,
+      message: "User has no completed todos",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Successfuly found all the todos",
+    data: todos,
+  });
+});
 
 export default app;
