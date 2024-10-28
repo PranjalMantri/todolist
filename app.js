@@ -146,8 +146,36 @@ app.post("/todo", verifyJWT, async (req, res) => {
   });
 });
 
-// app.get("/todo/:id", (req, res) => {});
-// app.patch("/todo/:id", (req, res) => {});
+app.patch("/todo/:id", async (req, res) => {
+  const todoId = req.params.id;
+  const { body } = req.body;
+
+  if (!todoId) {
+    return res.status(400).json({
+      success: false,
+      message: "Todo Id is required",
+    });
+  }
+
+  const todo = await Todo.findOneAndUpdate(
+    { _id: new mongoose.Types.ObjectId(todoId) },
+    { body: body },
+    { new: true }
+  );
+
+  if (!todoId) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid todo Id",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Successfuly updated the todo",
+    data: todo,
+  });
+});
 // app.delete("/todo/:id", (req, res) => {});
 // app.get("/todos/completed", (req, res) => {});
 
