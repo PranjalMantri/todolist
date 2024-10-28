@@ -176,7 +176,34 @@ app.patch("/todo/:id", async (req, res) => {
     data: todo,
   });
 });
-// app.delete("/todo/:id", (req, res) => {});
+
+app.delete("/todo/:id", async (req, res) => {
+  const todoId = req.params.id;
+
+  if (!todoId) {
+    return res.status(400).json({
+      success: false,
+      message: "Todo Id is required",
+    });
+  }
+
+  const todo = await Todo.findOneAndDelete({
+    _id: new mongoose.Types.ObjectId(todoId),
+  });
+
+  if (!todoId) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid todo Id",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Successfuly deleted the todo",
+  });
+});
+
 // app.get("/todos/completed", (req, res) => {});
 
 export default app;
